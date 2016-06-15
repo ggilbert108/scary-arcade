@@ -38,16 +38,16 @@ class SystemTest(unittest.TestCase):
         entity.add_component(MockComponentB())
         self.assertTrue(system.matches(entity))
 
-    def test_update_entity(self):
+    def test_update_entity_registration(self):
         system = System(MockComponentA, MockComponentB)
         entity = Entity(0)
         # Entity is not registered in the system, but it does match
         entity.has_component = MagicMock(return_value=True)
-        system.update_entity(entity)
+        system.update_entity_registration(entity)
         self.assertIn(0, system.entity_ids)
 
         entity.has_component.return_value = False
-        system.update_entity(entity)
+        system.update_entity_registration(entity)
         self.assertNotIn(0, system.entity_ids)
         
         

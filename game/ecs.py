@@ -27,7 +27,31 @@ class System:
         self.required = required
         self.entity_ids = set()
 
-    def update_entity(self, entity):
+    def bind_manager(self, manager):
+        self.manager = manager
+        
+    def update(self, deltaTime):
+        begin()
+
+        for entity_id in self.entity_ids:
+            entity = self.manager.get_entity_by_id()
+            process(entity, deltaTime)
+            
+        end()
+
+    # Overridden in the base class to specify functionality of system
+    def process(self, entity, deltaTime):
+        pass
+
+    # Can be overridden if you want to do something before the first entity is processed
+    def begin():
+        pass
+
+    # Can be overridden if you want to do something after the last entity is processed
+    def end():
+        pass
+
+    def update_entity_registration(self, entity):
         contains = entity.id in self.entity_ids
         matches = self.matches(entity)
 
@@ -44,3 +68,4 @@ class System:
                 return False
 
         return True
+
