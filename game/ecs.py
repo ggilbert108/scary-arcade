@@ -39,7 +39,7 @@ class System:
             
         end()
 
-    # Overridden in the base class to specify functionality of system
+    # Overridden in the derived class to specify functionality of system
     def process(self, entity, deltaTime):
         pass
 
