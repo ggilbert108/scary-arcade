@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
-from ecs import Component, Entity, System
+from ecs import Component, Entity, System, Manager
 
 class EntityTest(unittest.TestCase):
 
@@ -49,7 +49,42 @@ class SystemTest(unittest.TestCase):
         entity.has_component.return_value = False
         system.update_entity_registration(entity)
         self.assertNotIn(0, system.entity_ids)
+
+class ManagerTest(unittest.TestCase):
+
+    def test_create_entity(self):
+        manager = Manager()
+        entity = manager.create_entity()
+        self.assertEqual(entity.id, 0)
+
+    def test_add_component_to_entity(self):
+        manager = Manager()
+        entity = manager.create_entity()
+        manager.add_component_to_entity(entity, Component())
+        self.assertTrue(entity.has_component(Component))
+
+    def test_update(self):
+        manager = Manager()
+
+        system = System()
+        system.update = MagicMock()
         
+        manager.add_system(system)
+        manager.update(10)
+
+        system.update.assert_called_with(10)
+
+    def test_update_entity_registration(self):
+        manager = Manager()
+        system = System(MockComponentA)
+        manager.add_system(system)
+        
+        system.update_entity_registration = MagicMock()
+        
+        entity = manager.create_entity()
+        manager.add_component_to_entity(entity, MockComponentA())
+
+        system.update_entity_registration.assert_called_with(entity)
         
         
 class MockComponentA(Component):

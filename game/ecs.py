@@ -69,3 +69,33 @@ class System:
 
         return True
 
+class Manager:
+
+    def __init__(self):
+        self.entities = {}
+        self.current_id = 0
+
+        self.systems = []
+        
+    def create_entity(self):
+        entity = Entity(self.current_id)
+        self.current_id += 1
+
+        self.entities[entity.id] = entity
+        return entity
+
+    # Use this to add components, not the entity method!! Wish there was a way to enforce that in python
+    def add_component_to_entity(self, entity, component):
+        entity.add_component(component)
+        self.update_entity_registration(entity)
+    
+    def add_system(self, system):
+        self.systems.append(system)
+
+    def update(self, deltaTime):
+        for system in self.systems:
+            system.update(deltaTime)
+
+    def update_entity_registration(self, entity):
+        for system in self.systems:
+            system.update_entity_registration(entity)
