@@ -20,3 +20,27 @@ class Entity:
 
     def get_component(self, component_type):
         return self.components[component_type]
+
+class System:
+
+    def __init__(self, *required):
+        self.required = required
+        self.entity_ids = set()
+
+    def update_entity(self, entity):
+        contains = entity.id in self.entity_ids
+        matches = self.matches(entity)
+
+        # Already exists, but no longer matches
+        if contains and not matches:
+            self.entity_ids.remove(entity.id)
+        # Doesn't exist, but does match
+        elif not contains and matches:
+            self.entity_ids.add(entity.id)
+        
+    def matches(self, entity):
+        for required in self.required:
+            if not entity.has_component(required):
+                return False
+
+        return True

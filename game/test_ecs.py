@@ -1,5 +1,6 @@
 import unittest
-from ecs import Component, Entity
+from unittest.mock import MagicMock
+from ecs import Component, Entity, System
 
 class EntityTest(unittest.TestCase):
 
@@ -22,5 +23,39 @@ class EntityTest(unittest.TestCase):
         self.entity.add_component(component)
         returned = self.entity.get_component(Component)
         self.assertEqual(component, returned)
+
+class SystemTest(unittest.TestCase):
+
+    def test_matches(self):
+        system = System(MockComponentA, MockComponentB)
+
+        entity = Entity(0)
+        self.assertFalse(system.matches(entity))
+
+        entity.add_component(MockComponentA())
+        self.assertFalse(system.matches(entity))
+
+        entity.add_component(MockComponentB())
+        self.assertTrue(system.matches(entity))
+
+    def test_update_entity(self):
+        system = System(MockComponentA, MockComponentB)
+        entity = Entity(0)
+        # Entity is not registered in the system, but it does match
+        entity.has_component = MagicMock(return_value=True)
+        system.update_entity(entity)
+        self.assertIn(0, system.entity_ids)
+
+        entity.has_component.return_value = False
+        system.update_entity(entity)
+        self.assertNotIn(0, system.entity_ids)
+        
+        
+        
+class MockComponentA(Component):
+    pass
+
+class MockComponentB(Component):
+    pass
 
 unittest.main()
