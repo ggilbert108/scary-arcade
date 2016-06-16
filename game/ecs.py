@@ -31,24 +31,24 @@ class System:
         self.manager = manager
         
     def update(self, deltaTime):
-        begin()
+        self.begin()
 
         for entity_id in self.entity_ids:
-            entity = self.manager.get_entity_by_id()
-            process(entity, deltaTime)
+            entity = self.manager.get_entity_by_id(entity_id)
+            self.process(entity, deltaTime)
             
-        end()
+        self.end()
 
     # Overridden in the derived class to specify functionality of system
     def process(self, entity, deltaTime):
         pass
 
     # Can be overridden if you want to do something before the first entity is processed
-    def begin():
+    def begin(self):
         pass
 
     # Can be overridden if you want to do something after the last entity is processed
-    def end():
+    def end(self):
         pass
 
     def update_entity_registration(self, entity):
@@ -84,12 +84,16 @@ class Manager:
         self.entities[entity.id] = entity
         return entity
 
+    def get_entity_by_id(self, id):
+        return self.entities[id]
+
     # Use this to add components, not the entity method!! Wish there was a way to enforce that in python
     def add_component_to_entity(self, entity, component):
         entity.add_component(component)
         self.update_entity_registration(entity)
     
     def add_system(self, system):
+        system.bind_manager(self)
         self.systems.append(system)
 
     def update(self, deltaTime):
