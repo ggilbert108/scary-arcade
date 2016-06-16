@@ -5,6 +5,7 @@ from components import Location, Movement
 class MovementSystem(System):
 
     def __init__(self):
+        # requires Location and Movement components
         super().__init__(Location, Movement)
 
     def process(self, entity, deltaTime):
